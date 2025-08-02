@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cloth Shop - Zain Warrior Gamer</title>
+
+  <!-- Google OAuth Script -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f6f6f6; }
+    .gmail-icon { position: fixed; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; overflow: hidden; z-index: 2000; cursor: pointer; }
+    .gmail-icon img { width: 100%; height: 100%; object-fit: cover; }
+    #loginModal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+    #loginModal .modal-content { background: white; padding: 30px; border-radius: 10px; max-width: 300px; text-align: center; box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+    #profileDropdown { display: none; position: fixed; top: 70px; right: 20px; width: 280px; background: #2d2d2d; color: white; border-radius: 10px; padding: 20px; z-index: 1500; }
+    #profileDropdown.show { display: block; }
+    .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .profile-header h3 { font-size: 18px; }
+    .profile-image img { width: 40px; height: 40px; border-radius: 50%; }
+    .menu-buttons button { display: block; width: 100%; padding: 10px; margin: 8px 0; background: #444; color: white; border: none; border-radius: 6px; font-size: 15px; text-align: left; cursor: pointer; }
+    .menu-buttons button:hover { background-color: #555; }
+  </style>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f6f6f6;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #222;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      background-color: #222;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      display: none;
+      z-index: 999;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 10px 20px;
+      border-top: 1px solid #444;
+    }
+
+    .nav-links a:hover {
+      background-color: #333;
+      color: #ffce00;
+    }
+
+    .nav-links.active {
+      display: flex;
+    }
+
+    .hamburger {
+      display: block;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    #profileArea {
+      display: none;
+      position: relative;
+    }
+
+    #profileDropdown {
+      display: none;
+      position: absolute;
+      top: 45px;
+      right: 0;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      padding: 10px;
+      z-index: 1002;
+    }
+
+    #profileDropdown button {
+      padding: 5px 10px;
+      border: none;
+      background-color: #ff5722;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #userInfo {
+      color: white;
+      padding: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    #userInfo button {
+      margin-top: 5px;
+      padding: 5px 10px;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    
+    /* Product Grid */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+      transition: box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 3/2;
+      object-fit: cover;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      padding: 10px 10px 0 10px;
+      color: #333;
+    }
+
+    .price {
+      font-size: 15px;
+      font-weight: bold;
+      color: #e91e63;
+      padding: 0 10px;
+    }
+
+    .buy-button {
+      background-color: #ff5722;
+      color: white;
+      margin: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .buy-button:hover {
+      background-color: #e64a19;
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    footer {
+      background-color: #222;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    /* Login Modal */
+    #loginModal {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #loginModal .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    @media(min-width: 769px){
+      .nav-links {
+        flex-direction: row;
+        position: static;
+        background: none;
+        width: auto;
+        display: flex;
+      }
+
+      .nav-links a {
+        border-top: none;
+      }
+
+      .hamburger {
+        display: none;
+      }
+
+      #userInfo {
+        display: none !important;
+      }
+    }
+        body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #333;
+      overflow: hidden;
+      position: relative;
+      padding: 10px 20px;
+      color: white;
+    }
+
+    .menu-icon {
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .menu-icon div {
+      width: 30px;
+      height: 3px;
+      background-color: white;
+      margin: 6px 0;
+      transition: 0.4s;
+    }
+
+    .menu {
+      display: none;
+      flex-direction: column;
+      background-color: #444;
+      padding: 10px 0;
+    }
+
+    .menu a {
+      padding: 10px 20px;
+      text-decoration: none;
+      color: white;
+      display: block;
+    }
+
+    .menu a:hover {
+      background-color: #555;
+    }
+
+    /* For Responsive Toggle */
+    .menu.show {
+      display: flex;
+    }
+
+
+
+      .gmail-icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 2000;
+}
+
+.gmail-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#profileDropdown {
+  display: none;
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  width: 280px;
+  background-color: #2d2d2d;
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 1500;
+}
+
+#profileDropdown.show {
+  display: block;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.profile-header h3 {
+  font-size: 18px;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-buttons button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-buttons button:hover {
+  background-color: #555;
+}
+
+
+  </style>
+</head>
+<body>
+
+  <div class="menu" id="menu">
+  <a href="#">🏠 Home</a>
+  <a href="#">🔥 Trending</a>
+  <a href="#">📞 Contact</a>
+  <div style="color: #fff; padding: 10px 20px; font-size: 14px;" id="menuEmail"></div>
+  <button onclick="logoutUser()" style="margin: 10px 20px; padding: 8px 12px; background-color: #e91e63; border: none; color: white; border-radius: 4px; cursor: pointer;">Logout</button>
+</div>
+
+   <div class="navbar">
+    <div class="menu-icon" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+
+  <div class="menu" id="menu">
+    <a href="#">🏠 Home</a>
+    <a href="#">🔥 Trending</a>
+    <a href="#">📞 Contact</a>
+  </div>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="logo">Zain Warrior Gamer</div>
+
+    <div class="nav-links" id="navLinks">
+      <div id="userInfo">
+        <div id="userEmail" style="font-size: 14px;"></div>
+        <button onclick="logoutUser()">Logout</button>
+        <hr style="margin: 10px 0; border-color: #555;">
+      </div>
+      <a href="#">Home</a>
+      <a href="#">Shop</a>
+      <a href="#">Contact</a>
+      <a href="#">Cart</a>
+    </div>
+
+<div class="gmail-icon" onclick="toggleProfileDropdown()">
+  <img id="gmailProfilePic" src="" alt="Profile" style="width: 36px; height: 36px; border-radius: 50%; cursor: pointer;">
+</div>
+
+<!-- Profile Dropdown Menu -->
+<div id="profileDropdown">
+  <div class="profile-header">
+    <h3 id="profileName">Warrior Gamer</h3>
+    <div class="profile-image">
+      <img id="profilePic" src="" alt="Profile" style="width: 36px; height: 36px; border-radius: 50%; cursor: pointer">
+    </div>
+  </div>
+  <div class="menu-buttons">
+    <button onclick="window.open('https://myaccount.google.com', '_blank')">Manage Google Account</button>
+    <button onclick="window.open('https://myaccount.google.com/personal-info', '_blank')">Personalization</button>
+    <button onclick="logoutUser()">Logout</button>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="grid-container">
+    <a class='card-link' href='next.html'>
+      <div class="card">
+        <img src="Clothes/cloth2.png" alt="Black Coat Pant">
+        <div class="card-title">Black Coat Pant</div>
+        <div class="price">₹3499</div>
+        <button class="buy-button">View Details</button>
+      </div>
+    </a>
+
+    <div class="card">
+      <img src="Clothes/cloth3.png" alt="Lower Combo">
+      <div class="card-title">Trio Lower Combo</div>
+      <div class="price">₹800</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <img src="https://via.placeholder.com/300x250?text=Cloth+3" alt="Cloth 3">
+      <div class="card-title">Casual Hoodie</div>
+      <div class="price">₹999</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <img src="https://via.placeholder.com/300x250?text=Cloth+4" alt="Cloth 4">
+      <div class="card-title">Summer T-Shirt</div>
+      <div class="price">₹499</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <img src="https://via.placeholder.com/300x250?text=Cloth+5" alt="Cloth 5">
+      <div class="card-title">Slim Fit Jeans</div>
+      <div class="price">₹1299</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <img src="https://via.placeholder.com/300x250?text=Cloth+6" alt="Cloth 6">
+      <div class="card-title">Winter Jacket</div>
+      <div class="price">₹2499</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <img src="https://via.placeholder.com/300x250?text=Cloth+7" alt="Cloth 7">
+      <div class="card-title">Printed Shirt</div>
+      <div class="price">₹799</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <img src="https://via.placeholder.com/300x250?text=Cloth+8" alt="Cloth 8">
+      <div class="card-title">Formal Pants</div>
+      <div class="price">₹1099</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+
+    <div class="card">
+      <img src="Clothes/cloth1.png" alt="Cloth 9">
+      <div class="card-title">Gym Tracksuit</div>
+      <div class="price">₹1199</div>
+      <button class="buy-button">Buy Now</button>
+    </div>
+  </div>
+
+  <div id="loginModal">
+  <div class="modal-content">
+    <h2>Login Required</h2>
+    <p>Please login to continue</p>
+    <div id="g_id_onload"
+     data-client_id="105874237312-rc9v19lci4tfrjpphunhoekb9ff8nsbl.apps.googleusercontent.com"
+     data-context="signin"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="false">
+</div>
+
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular"
+         data-theme="filled_blue" data-text="signin_with" data-size="large" data-logo_alignment="left">
+    </div>
+  </div>
+</div>
+    
+      
+
+<div id="profileDropdown">
+  <div class="profile-header">
+    <h3 id="profileName">Warrior Gamer</h3>
+    <div class="profile-image"><img id="profilePic" src="" alt="Profile"></div>
+  </div>
+  <div class="menu-buttons">
+    <button onclick="window.open('https://myaccount.google.com', '_blank')">Manage Google Account</button>
+    <button onclick="window.open('https://myaccount.google.com/personal-info', '_blank')">Personalization</button>
+  
+  </div>
+</div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Zain Warrior Gamer. All rights reserved.
+  </footer>
+
+  <!-- Script -->
+  <script>
+
+    function showProfile() {
+  const img = localStorage.getItem("warriorUserImage");
+  const email = localStorage.getItem("warriorUserEmail");
+
+  if (img && email) {
+    document.getElementById("profilePic").src = img;
+    document.getElementById("profileArea").style.display = "block";
+    document.getElementById("userInfo").style.display = "block";
+    document.getElementById("userEmail").textContent = email;
+
+    // ✅ Show email in hamburger menu also
+    const menuEmail = document.getElementById("menuEmail");
+    if (menuEmail) menuEmail.textContent = `Logged in as: ${email}`;
+  }
+}
+
+    function toggleMenu() {
+      const nav = document.getElementById("navLinks");
+      nav.classList.toggle("active");
+    }
+
+    function toggleProfileDropdown() {
+      const drop = document.getElementById("profileDropdown");
+      drop.style.display = drop.style.display === "block" ? "none" : "block";
+    }
+
+    function logoutUser() {
+      localStorage.removeItem("warriorUserLoggedIn");
+      localStorage.removeItem("warriorUserImage");
+      localStorage.removeItem("warriorUserEmail");
+      location.reload();
+    }
+
+    function handleCredentialResponse(response) {
+      const token = response.credential;
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const picture = payload.picture;
+      const email = payload.email;
+
+      localStorage.setItem("warriorUserLoggedIn", "true");
+      localStorage.setItem("warriorUserImage", picture);
+      localStorage.setItem("warriorUserEmail", email);
+
+      document.getElementById("loginModal").style.display = "none";
+      alert("Login successful, now you can explore ");
+      showProfile();
+    }
+
+    function showProfile() {
+      const img = localStorage.getItem("warriorUserImage");
+      const email = localStorage.getItem("warriorUserEmail");
+
+      if (img && email) {
+        document.getElementById("profilePic").src = img;
+        document.getElementById("profileArea").style.display = "block";
+        document.getElementById("userInfo").style.display = "block";
+        document.getElementById("userEmail").textContent = email;
+      }
+    }
+
+    window.onload = function () {
+      const isLoggedIn = localStorage.getItem("warriorUserLoggedIn");
+
+      if (!isLoggedIn) {
+        document.getElementById("loginModal").style.display = "flex";
+      } else {
+        showProfile();
+      }
+    };
+     function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.classList.toggle('show');
+    }
+
+    function toggleProfileDropdown() {
+  const dropdown = document.getElementById("profileDropdown");
+  dropdown.classList.toggle("show");
+}
+
+function logout() {
+  alert("Logged out!");
+}
+
+function updateProfileInfo(name, photoURL) {
+  if (name) document.getElementById("profileName").innerText = name;
+  if (photoURL) {
+    document.getElementById("profilePic").src = photoURL;
+    document.getElementById("gmailProfilePic").src = photoURL;
+  }
+}
+
+function handleCredentialResponse(response) {
+  const data = parseJwt(response.credential);
+  updateProfileInfo(data.name, data.picture);
+}
+
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error("Invalid token", e);
+    return {};
+  }
+}
+
+
+
+
+
+  </script>
+
+  <script>
+  function toggleProfileDropdown() {
+    const dropdown = document.getElementById("profileDropdown");
+    dropdown.classList.toggle("show");
+  }
+
+  function logoutUser() {
+    localStorage.removeItem("warriorUserLoggedIn");
+    localStorage.removeItem("warriorUserImage");
+    localStorage.removeItem("warriorUserEmail");
+    location.reload();
+  }
+
+  function updateProfileInfo(name, photoURL) {
+    if (name) document.getElementById("profileName").innerText = name;
+    if (photoURL) {
+      document.getElementById("profilePic").src = photoURL;
+      document.getElementById("gmailProfilePic").src = photoURL;
+    }
+  }
+
+  function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+    if (data) {
+      localStorage.setItem("warriorUserLoggedIn", "true");
+      localStorage.setItem("warriorUserImage", data.picture);
+      localStorage.setItem("warriorUserEmail", data.email);
+      updateProfileInfo(data.name, data.picture);
+      document.getElementById("loginModal").style.display = "none";
+    }
+  }
+
+  function parseJwt(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      console.error("Invalid token", e);
+      return null;
+    }
+  }
+
+  window.onload = function () {
+    const isLoggedIn = localStorage.getItem("warriorUserLoggedIn");
+    if (!isLoggedIn) {
+      document.getElementById("loginModal").style.display = "flex";
+    } else {
+      const name = "Zain Warrior Gamer";
+      const image = localStorage.getItem("warriorUserImage");
+      updateProfileInfo(name, image);
+    }
+  };
+</script>
+
+
+sign in with google
+</body>
+</html>
+
+
